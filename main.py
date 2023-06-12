@@ -121,14 +121,15 @@ if __name__ == "__main__":
     rnd = torch.randperm(x.size(0))
     x_neg = overlay_y_on_x(x, y[rnd])
     
-    for data, name in zip([x, x_pos, x_neg], ['orig', 'pos', 'neg']):
-        visualize_sample(data, name)
+    # for data, name in zip([x, x_pos, x_neg], ['orig', 'pos', 'neg']):
+    #     visualize_sample(data, name)
     
     net.train(x_pos, x_neg)
 
     print('train error:', 1.0 - net.predict(x).eq(y).float().mean().item())
 
     x_te, y_te = next(iter(test_loader))
-    x_te, y_te = x_te.cuda(), y_te.cuda()
+    if torch.cuda.is_available():
+        x_te, y_te = x_te.cuda(), y_te.cuda()
 
     print('test error:', 1.0 - net.predict(x_te).eq(y_te).float().mean().item())
