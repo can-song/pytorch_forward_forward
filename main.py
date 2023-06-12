@@ -43,9 +43,11 @@ class Net(torch.nn.Module):
 
     def __init__(self, dims):
         super().__init__()
-        self.layers = []
+        # self.layers = []
+        self.layers = nn.ModuleList()
         for d in range(len(dims) - 1):
-            self.layers += [Layer(dims[d], dims[d + 1]).cuda()]
+            # self.layers += [Layer(dims[d], dims[d + 1]).cuda()]
+            self.layers.append(Layer(dims[d], dims[d + 1]))
 
     def predict(self, x):
         goodness_per_label = []
@@ -112,7 +114,9 @@ if __name__ == "__main__":
 
     net = Net([784, 500, 500])
     x, y = next(iter(train_loader))
-    x, y = x.cuda(), y.cuda()
+    if torch.cuda.is_available():
+        net = net.cuda()
+        x, y = x.cuda(), y.cuda()
     x_pos = overlay_y_on_x(x, y)
     rnd = torch.randperm(x.size(0))
     x_neg = overlay_y_on_x(x, y[rnd])
